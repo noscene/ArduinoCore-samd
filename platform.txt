@@ -20,7 +20,7 @@
 # https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5---3rd-party-Hardware-specification
 
 name=Doppler SAMD51 (32-bits ARM Cortex-M4) Boards
-version=1.2.5
+version=1.2.6
 
 # Compile variables
 # -----------------
