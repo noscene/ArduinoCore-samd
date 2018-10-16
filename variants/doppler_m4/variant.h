@@ -57,10 +57,10 @@ extern "C"
  *----------------------------------------------------------------------------*/
 
 // Number of pins defined in PinDescription array
-#define PINS_COUNT           (38u)
-#define NUM_DIGITAL_PINS     (26u)
-#define NUM_ANALOG_INPUTS    (7u)
-#define NUM_ANALOG_OUTPUTS   (2u)
+#define PINS_COUNT           (37u)
+#define NUM_DIGITAL_PINS     (27u)
+#define NUM_ANALOG_INPUTS    (10u)
+#define NUM_ANALOG_OUTPUTS   (1u)
 #define analogInputToDigitalPin(p)  ((p < NUM_ANALOG_INPUTS) ? (p) + PIN_A0 : -1)
 
 #define digitalPinToPort(P)        ( &(PORT->Group[g_APinDescription[P].ulPort]) )
@@ -81,22 +81,37 @@ extern "C"
 // #define digitalPinToTimer(P)
 
 // LEDs
-#define PIN_LED_13           (13u)
-#define PIN_LED              PIN_LED_13
-#define LED_BUILTIN          PIN_LED_13
+#define PIN_LED_33          (33u)
+#define PIN_LED              PIN_LED_33
+#define LED_BUILTIN          PIN_LED_33
 
+// FPGA internal SPI Bus
+#define ICE_CLK     21     // PB03
+#define ICE_MOSI    22    // PB23
+#define ICE_MISO    23     // PB02
+#define ICE_CS      24     // PB22
+#define ICE_CDONE   25     // PA16
+#define ICE_CRESET  26     // PA17
+    
+    
 /*
  * Analog pins
  */
-#define PIN_A0               (14ul)
+#define PIN_A0               (10ul)
 #define PIN_A1               (PIN_A0 + 1)
 #define PIN_A2               (PIN_A0 + 2)
 #define PIN_A3               (PIN_A0 + 3)
 #define PIN_A4               (PIN_A0 + 4)
 #define PIN_A5               (PIN_A0 + 5)
 #define PIN_A6               (PIN_A0 + 6)
-#define PIN_DAC0             PIN_A0
-#define PIN_DAC1             PIN_A1
+#define PIN_A7               (PIN_A0 + 7)
+#define PIN_A8               (PIN_A0 + 8)
+#define PIN_A9               (PIN_A0 + 9)
+#define PIN_A10              (PIN_A0 + 10)
+    
+#define PIN_DAC0             PIN_A6
+#define PIN_DAC              PIN_A6
+// #define PIN_DAC1             PIN_A1
 
 static const uint8_t A0  = PIN_A0;
 static const uint8_t A1  = PIN_A1;
@@ -105,9 +120,13 @@ static const uint8_t A3  = PIN_A3;
 static const uint8_t A4  = PIN_A4;
 static const uint8_t A5  = PIN_A5;
 static const uint8_t A6  = PIN_A6 ;
+static const uint8_t A7  = PIN_A7 ;
+static const uint8_t A8  = PIN_A8 ;
+static const uint8_t A9  = PIN_A9 ;
+static const uint8_t A10 = PIN_A10 ;
 
 static const uint8_t DAC0 = PIN_DAC0;
-static const uint8_t DAC1 = PIN_DAC1;
+//static const uint8_t DAC1 = PIN_DAC1;
 
 #define ADC_RESOLUTION		12
 
@@ -130,25 +149,28 @@ static const uint8_t ATN = PIN_ATN;
  */
 #define SPI_INTERFACES_COUNT     1
 
-#define PIN_SPI_MISO         (23u)
-#define PIN_SPI_SCK          (24u)
-#define PIN_SPI_MOSI         (25u)
-#define PERIPH_SPI           sercom1
-#define PAD_SPI_TX           SPI_PAD_0_SCK_1
-#define PAD_SPI_RX           SERCOM_RX_PAD_3
+#define PIN_SPI_CS           (6u)
+#define PIN_SPI_MISO         (9u)
+#define PIN_SPI_SCK          (8u)
+#define PIN_SPI_MOSI         (7u)
+#define PERIPH_SPI           sercom3
+#define PAD_SPI_TX           SPI_PAD_2_SCK_3
+#define PAD_SPI_RX           SERCOM_RX_PAD_0
 
 static const uint8_t SS	  = PIN_A2 ;
 static const uint8_t MOSI = PIN_SPI_MOSI ;
 static const uint8_t MISO = PIN_SPI_MISO ;
 static const uint8_t SCK  = PIN_SPI_SCK ;
 
-/*
+
+    
+ /*
  * Wire Interfaces
  */
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA         (21u)
-#define PIN_WIRE_SCL         (22u)
+#define PIN_WIRE_SDA         (1u)
+#define PIN_WIRE_SCL         (0u)
 #define PERIPH_WIRE          sercom2
 #define WIRE_IT_HANDLER      SERCOM2_Handler
 
@@ -158,9 +180,9 @@ static const uint8_t SCL = PIN_WIRE_SCL;
 /*
  * USB
  */
-#define PIN_USB_HOST_ENABLE (26ul)
-#define PIN_USB_DM          (27ul)
-#define PIN_USB_DP          (28ul)
+#define PIN_USB_HOST_ENABLE (27ul)
+#define PIN_USB_DM          (28ul)
+#define PIN_USB_DP          (29ul)
 
 /*
  * I2S Interfaces
@@ -171,13 +193,14 @@ static const uint8_t SCL = PIN_WIRE_SCL;
 // no I2S on G19!
 
 //QSPI Pins
-#define PIN_QSPI_SCK	(32u)
-#define PIN_QSPI_CS	(33u)
-#define PIN_QSPI_IO0	(34u)
-#define PIN_QSPI_IO1	(35u)
-#define PIN_QSPI_IO2	(36u)
-#define PIN_QSPI_IO3	(37u)
+#define PIN_QSPI_SCK	(5u)
+#define PIN_QSPI_CS	    (2u)
+#define PIN_QSPI_IO0	(17u)
+#define PIN_QSPI_IO1	(18u)
+#define PIN_QSPI_IO2	(19u)
+#define PIN_QSPI_IO3	(20u)
 
+/*
 //PCC Pins
 #define PIN_PCC_DEN1    (PIN_SPI_MOSI)
 #define PIN_PCC_DEN2    (PIN_SPI_SCK)
@@ -192,7 +215,8 @@ static const uint8_t SCL = PIN_WIRE_SCL;
 #define PIN_PCC_D7      (0u)
 #define PIN_PCC_D8      (5u)
 #define PIN_PCC_D9      (6u)
-
+*/
+    
 //TODO: meaningful value for this
 #define VARIANT_QSPI_BAUD_DEFAULT 5000000
 
