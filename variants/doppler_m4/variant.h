@@ -109,8 +109,8 @@ extern "C"
 #define PIN_A9               (PIN_A0 + 9)
 #define PIN_A10              (PIN_A0 + 10)
     
-#define PIN_DAC0             PIN_A0
-#define PIN_DAC1             PIN_A4
+#define PIN_DAC0             34
+#define PIN_DAC1             35
 
 static const uint8_t A0  = PIN_A0;
 static const uint8_t A1  = PIN_A1;
@@ -219,6 +219,32 @@ static const uint8_t SCL = PIN_WIRE_SCL;
 //TODO: meaningful value for this
 #define VARIANT_QSPI_BAUD_DEFAULT 5000000
 
+    
+    
+    void dacInit();
+    void dacWrite(uint16_t  left ,uint16_t  right);
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 #ifdef __cplusplus
 }
 #endif
@@ -265,4 +291,6 @@ extern Uart Serial1;
 #define SERIAL_PORT_HARDWARE        Serial1
 #define SERIAL_PORT_HARDWARE_OPEN   Serial1
 
-#endif /* _VARIANT_MERTO_M4_ */
+
+
+#endif /* _VARIANT_DOPPLER_M4_ */

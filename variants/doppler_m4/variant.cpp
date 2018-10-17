@@ -106,19 +106,53 @@ SERCOM sercom5( SERCOM5 ) ;
 
 Uart Serial1( &sercom3, PIN_SERIAL1_RX, PIN_SERIAL1_TX, PAD_SERIAL1_RX, PAD_SERIAL1_TX ) ;
 
-void SERCOM3_0_Handler()
-{
-  Serial1.IrqHandler();
+void SERCOM3_0_Handler()    {   Serial1.IrqHandler();         }
+void SERCOM3_1_Handler()    {   Serial1.IrqHandler();         }
+void SERCOM3_2_Handler()    {   Serial1.IrqHandler();         }
+void SERCOM3_3_Handler()    {   Serial1.IrqHandler();         }
+
+/*********************************************************************************************************
+        some useful functions
+*********************************************************************************************************/
+
+
+// init 2 DACS
+void dacInit(){
+    
+    // Do this in the Sketch first!
+    //pinMode(34,OUTPUT);
+    //pinMode(35,OUTPUT);
+    
+    while ( GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_MASK );
+    
+    GCLK->PCHCTRL[GCM_DAC].reg = ( GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK4 );  // use 48MHz clock (100MHz max for DAC) from GCLK4, which was setup in startup.c
+    while ( (GCLK->PCHCTRL[GCM_DAC].reg & GCLK_PCHCTRL_CHEN) == 0 );      // wait for sync
+    while ( DAC->SYNCBUSY.reg & DAC_SYNCBUSY_MASK );
+    
+    // SUPC->VREF.reg |= SUPC_VREF_SEL(mode - AR_INTREF_1V0);
+    
+    DAC->CTRLB.reg = DAC_CTRLB_REFSEL_VREFPU;
+    
+    //ADC0->REFCTRL.bit.REFSEL = AR_EXTERNAL_REFB;  // or AR_EXTERNAL_REFB
+    //ADC1->REFCTRL.bit.REFSEL = AR_EXTERNAL_REFB;
+    
+    DAC->CTRLA.bit.ENABLE = 0x00;
+    DAC->DACCTRL[0].bit.ENABLE = 0x01;
+    
+    // delay(1);
+    for (int i=0;i<60000;i++) __asm("nop");
+    
+    DAC->DACCTRL[1].bit.ENABLE = 0x01;
+    DAC->CTRLA.bit.ENABLE = 0x01;
+    
+    //while (DAC->SYNCBUSY.bit.ENABLE == 1) {}
+    while ( DAC->SYNCBUSY.reg & DAC_SYNCBUSY_MASK );
+    
 }
-void SERCOM3_1_Handler()
-{
-  Serial1.IrqHandler();
-}
-void SERCOM3_2_Handler()
-{
-  Serial1.IrqHandler();
-}
-void SERCOM3_3_Handler()
-{
-  Serial1.IrqHandler();
+
+void dacWrite(uint16_t  left ,uint16_t  right){
+    DAC->DATA[0].reg = left >> 4;
+    while (DAC->SYNCBUSY.bit.DATA0);
+    DAC->DATA[1].reg = right >> 4;
+    while (DAC->SYNCBUSY.bit.DATA1);
 }
