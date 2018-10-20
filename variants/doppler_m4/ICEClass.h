@@ -1,10 +1,18 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <wiring_private.h> // pinPeripheral() function
-#include <ice40_simple_io.h>
 
 #ifndef _ICECLASS_DOPPLER_M4_
 #define _ICECLASS_DOPPLER_M4_
+ 
+// give subclass chance to modify the BITSTREAM
+#ifndef BITSTREAM
+#define BITSTREAM doppler_simple_io_bin
+// #include "/Users/svenbraun/Documents/GitHub/Doppler_FPGA_Firmware/doppler_simple_io.h"
+#include <doppler_simple_io.h>
+#endif
+
+//#include <ice40_simple_io.h>
 
 
 class ICEClass {
@@ -14,14 +22,13 @@ public:
     SPIClass * SPIfpga;
     ICEClass(){};
     
+    // see Board variant.h
     uint16_t  ice_cs    = ICE_CS;
     uint16_t  ice_mosi  = ICE_MOSI;
     uint16_t  ice_miso  = ICE_MISO;
     uint16_t  ice_clk   = ICE_CLK;
     
     void initSPI(){
-        // https://learn.adafruit.com/using-atsamd21-sercom-to-add-more-spi-i2c-serial-ports/creating-a-new-spi
-        // https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/SERCOM.h
         pinMode (ice_cs, OUTPUT);
         pinMode (ice_clk, OUTPUT);
         pinMode (ice_mosi, OUTPUT);
@@ -39,10 +46,10 @@ public:
      // https://learn.adafruit.com/using-atsamd21-sercom-to-add-more-spi-i2c-serial-ports/creating-a-new-spi
      // https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/SERCOM.h
      
-     ice_cs = 9;
-     ice_mosi = 11;
-     ice_miso = 10;
-     ice_clk = 13;
+     ice_cs = 11;        //  pa19
+     ice_mosi = 13;     //  pa21
+     ice_miso = 12;     //  pa20
+     ice_clk = 14;      //  pa22
      
      pinMode (ice_cs, OUTPUT);
      pinMode (ice_clk, OUTPUT);
@@ -58,13 +65,13 @@ public:
      */
     
     uint16_t sendSPI16(uint16_t  data) {
-        sendSPI((data >> 8) & 0xff , data & 0xff );
+        return sendSPI((data >> 8) & 0xff , data & 0xff );
     }
     
     // send 2 bytes to FPGA
     uint16_t sendSPI(uint8_t  adr , uint8_t  txdata) {
         digitalWrite(ice_cs, LOW);
-        SPIfpga->beginTransaction(SPISettings(12000000, MSBFIRST, SPI_MODE0));
+        SPIfpga->beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
         uint8_t  rxdata1 = SPIfpga->transfer(adr);
         uint8_t  rxdata2 = SPIfpga->transfer(txdata);
         SPIfpga->endTransaction();
@@ -72,6 +79,10 @@ public:
         return rxdata1 << 8 | rxdata2 & 0xff ;
     };
     
+/*
+    //
+    // SoftSPI in BitBang Mode
+    //
     
     void initSPI_Soft(){
         
@@ -122,12 +133,12 @@ public:
         digitalWrite(ice_clk, HIGH);
         return r;
     };
-    
-    
-    
-    
-    
+*/
+    //
     // Here we start the BIT_STREAM Stuff in BitBang Mode
+    // TODO: use also hardware spi
+    //
+
     void iceClock() {
         digitalWrite(ice_clk, LOW);
         digitalWrite(ice_clk, HIGH);
@@ -175,9 +186,9 @@ public:
         }
         
         const unsigned int mosiPin = ICE_MOSI;
-        const unsigned int size = sizeof(ice40simple_bin);
+        const unsigned int size = sizeof(BITSTREAM);
         for (int k = 0; k < size; k++) {
-            byte d = ice40simple_bin[k];
+            byte d = BITSTREAM[k];
             
             // Speedup
             if(d==0){
