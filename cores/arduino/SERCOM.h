@@ -102,9 +102,9 @@ typedef enum
 typedef enum
 {
 	SPI_PAD_0_SCK_1 = 0,
-	SPI_PAD_2_SCK_3,
+	SPI_PAD_2_SCK_3,        // not supported on SAMD51
 	SPI_PAD_3_SCK_1,
-	SPI_PAD_0_SCK_3
+	SPI_PAD_0_SCK_3         // not supported on SAMD51
 } SercomSpiTXPad;
 
 typedef enum
