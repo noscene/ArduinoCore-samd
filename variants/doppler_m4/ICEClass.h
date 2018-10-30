@@ -4,7 +4,7 @@
 
 #ifndef _ICECLASS_DOPPLER_M4_
 #define _ICECLASS_DOPPLER_M4_
- 
+
 // give subclass chance to modify the BITSTREAM
 #ifndef BITSTREAM
 #define BITSTREAM doppler_simple_io_bin
@@ -12,6 +12,9 @@
 #include <doppler_simple_io.h>
 #endif
 
+
+
+#define SPI_FPGA_SPEED 34000000
 //#include <ice40_simple_io.h>
 
 
@@ -71,74 +74,82 @@ public:
     // send 2 bytes to FPGA
     uint16_t sendSPI(uint8_t  adr , uint8_t  txdata) {
         digitalWrite(ice_cs, LOW);
-        SPIfpga->beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+        SPIfpga->beginTransaction(SPISettings(SPI_FPGA_SPEED, MSBFIRST, SPI_MODE0));
         uint8_t  rxdata1 = SPIfpga->transfer(adr);
         uint8_t  rxdata2 = SPIfpga->transfer(txdata);
-        SPIfpga->endTransaction();
+        /* SPIfpga->transfer(adr);  // only for messure / debug
+        SPIfpga->transfer(txdata);
+        SPIfpga->transfer(adr);
+        SPIfpga->transfer(txdata);
+        SPIfpga->transfer(adr);
+        SPIfpga->transfer(txdata);
+        SPIfpga->transfer(adr);
+        SPIfpga->transfer(txdata);
+        SPIfpga->endTransaction(); */
         digitalWrite(ice_cs, HIGH);
         return rxdata1 << 8 | rxdata2 & 0xff ;
     };
     
-/*
-    //
-    // SoftSPI in BitBang Mode
-    //
-    
-    void initSPI_Soft(){
-        
-        ice_cs = 9;
-        ice_mosi = 11;
-        ice_miso = 10;
-        ice_clk = 13;
-        
-        pinPeripheral(ice_miso,   PIO_DIGITAL);
-        pinPeripheral(ice_mosi,   PIO_DIGITAL);
-        pinPeripheral(ice_clk,    PIO_DIGITAL);
-        pinMode (ice_miso, INPUT_PULLUP);
-        pinMode (ice_cs, OUTPUT);
-        pinMode (ice_clk, OUTPUT);
-        pinMode (ice_mosi, OUTPUT);
-    };
-    
-    
-    // SoftSPI for Testing
-    uint8_t sendSPI_Soft(uint8_t  adr , uint8_t  txdata) {
-        digitalWrite(ice_clk, HIGH);
-        digitalWrite(ice_cs, LOW);
-        if(adr & 0x80) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x40) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x20) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x10) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x8)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x4)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x2)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        if(adr & 0x1)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
-        
-        uint8_t result = 0;
-        if(txdata & 0x80) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x40) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x20) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x10) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x8)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x4)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x2)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        if(txdata & 0x1)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
-        digitalWrite(ice_cs, HIGH);
-        return result;
-    };
-    
-    bool iceReadClock() {
-        digitalWrite(ice_clk, LOW);
-        bool r = digitalRead(ice_miso);
-        digitalWrite(ice_clk, HIGH);
-        return r;
-    };
-*/
+    /*
+     //
+     // SoftSPI in BitBang Mode
+     //
+     
+     void initSPI_Soft(){
+     
+     ice_cs = 9;
+     ice_mosi = 11;
+     ice_miso = 10;
+     ice_clk = 13;
+     
+     pinPeripheral(ice_miso,   PIO_DIGITAL);
+     pinPeripheral(ice_mosi,   PIO_DIGITAL);
+     pinPeripheral(ice_clk,    PIO_DIGITAL);
+     pinMode (ice_miso, INPUT_PULLUP);
+     pinMode (ice_cs, OUTPUT);
+     pinMode (ice_clk, OUTPUT);
+     pinMode (ice_mosi, OUTPUT);
+     };
+     
+     
+     // SoftSPI for Testing
+     uint8_t sendSPI_Soft(uint8_t  adr , uint8_t  txdata) {
+     digitalWrite(ice_clk, HIGH);
+     digitalWrite(ice_cs, LOW);
+     if(adr & 0x80) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x40) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x20) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x10) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x8)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x4)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x2)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     if(adr & 0x1)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  iceClock();
+     
+     uint8_t result = 0;
+     if(txdata & 0x80) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x40) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x20) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x10) digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x8)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x4)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x2)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     if(txdata & 0x1)  digitalWrite(ice_mosi,1); else  digitalWrite(ice_mosi,0);  result >>= 1;  result |= iceReadClock() << 7;
+     digitalWrite(ice_cs, HIGH);
+     return result;
+     };
+     
+     bool iceReadClock() {
+     digitalWrite(ice_clk, LOW);
+     bool r = digitalRead(ice_miso);
+     digitalWrite(ice_clk, HIGH);
+     return r;
+     };
+     */
     //
     // Here we start the BIT_STREAM Stuff in BitBang Mode
     // TODO: use also hardware spi
     //
-
+    
     void iceClock() {
         digitalWrite(ice_clk, LOW);
         digitalWrite(ice_clk, HIGH);
@@ -153,7 +164,54 @@ public:
         digitalWrite(ICE_CS, HIGH);
     };
     
-    int upload() {
+    bool upload(){
+        upload(BITSTREAM,sizeof(BITSTREAM));
+    }
+    bool upload(const unsigned char * bitstream , const unsigned int bitstream_size){
+        // ensure via are in right mode
+        pinPeripheral(ICE_MISO,   PIO_DIGITAL);
+        pinPeripheral(ICE_MOSI,   PIO_DIGITAL);
+        pinPeripheral(ICE_CLK,    PIO_DIGITAL);
+        
+        pinMode(ICE_CLK,     OUTPUT);
+        pinMode(ICE_MOSI,    OUTPUT);
+        pinMode(ICE_CRESET,  OUTPUT);
+        pinMode(ICE_CS,      OUTPUT);
+        
+        // enable reset
+        digitalWrite(ICE_CRESET, LOW);
+        
+        // start clock high
+        digitalWrite(ICE_CLK, HIGH);
+        
+        // select SRAM programming mode
+        digitalWrite(ICE_CS, LOW);
+        delay(10);
+        
+        // release reset
+        digitalWrite(ICE_CRESET, HIGH);
+        delay(100);     // TODO: check time! for Waiting FPGA is self init!
+
+        // Begin HardwareSPI
+        initSPI();
+        SPIfpga->beginTransaction(SPISettings(SPI_FPGA_SPEED, MSBFIRST, SPI_MODE0));
+        SPIfpga->transfer(0x00);    // 8 clocks
+        //const unsigned int size = sizeof(BITSTREAM);
+        for (int k = 0; k < bitstream_size; k++) {
+            SPIfpga->transfer(bitstream[k]);
+        }
+        SPIfpga->endTransaction();
+        for(int i = 0 ; i < 8 ; i++){
+            SPIfpga->transfer(0x00);
+        }
+        // End HardwareSPI
+
+        bool cdone_high = digitalRead(ICE_CDONE) == HIGH;
+        reset_inout();
+        return cdone_high;
+    }
+    
+    int uploadBitBang() {   // old style
         
         // ensure via are in right mode
         pinPeripheral(ICE_MISO,   PIO_DIGITAL);
