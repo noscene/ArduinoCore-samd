@@ -17,7 +17,7 @@
 menu.cache=Cache
 
 
-# Doppler M4 (SAMD51)
+# Adafruit ItsyBitsy M4 (SAMD51)
 # ------------------------------
 doppler_m4.name=Doppler M4 (SAMD51)
 doppler_m4.vid.0=0x16D0
@@ -37,7 +37,7 @@ doppler_m4.build.usb_product="Doppler"
 doppler_m4.build.usb_manufacturer="Dadamachines"
 doppler_m4.build.board=DOPPLER_M4
 doppler_m4.build.core=arduino
-doppler_m4.build.extra_flags=-D__SAMD51G19A__ -Ddoppler_m4_EXPRESS -D__SAMD51__ {build.usb_flags} -D__FPU_PRESENT -DARM_MATH_CM4  -mfloat-abi=hard -mfpu=fpv4-sp-d16
+doppler_m4.build.extra_flags=-D__SAMD51G19A__ -Ddoppler_m4_EXPRESS -D__SAMD51__ {build.usb_flags} -D__FPU_PRESENT -DARM_MATH_CM4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 doppler_m4.build.ldscript=linker_scripts/gcc/flash_with_bootloader.ld
 doppler_m4.build.openocdscript=openocd_scripts/arduino_zero.cfg
 doppler_m4.build.variant=doppler_m4
@@ -51,3 +51,36 @@ doppler_m4.menu.cache.on=Enabled
 doppler_m4.menu.cache.on.build.cache_flags=-DENABLE_CACHE
 doppler_m4.menu.cache.off=Disabled
 doppler_m4.menu.cache.off.build.cache_flags=
+
+them4.name=theM4 (SAMD51)
+them4.vid.0=0x16D0
+them4.pid.0=0x0E3F
+them4.vid.1=0x16D0
+them4.pid.1=0x0E40
+them4.upload.tool=bossac18
+them4.upload.protocol=sam-ba
+them4.upload.maximum_size=507904
+them4.upload.offset=0x4000
+them4.upload.use_1200bps_touch=true
+them4.upload.wait_for_upload_port=true
+them4.upload.native_usb=true
+them4.build.mcu=cortex-m4
+them4.build.f_cpu=120000000L
+them4.build.usb_product="theM4"
+them4.build.usb_manufacturer="Dadamachines"
+them4.build.board=theM4
+them4.build.core=arduino
+them4.build.extra_flags=-D__SAMD51N20A__ -DtheM4 -D__SAMD51__ {build.usb_flags} -D__FPU_PRESENT -DARM_MATH_CM4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
+them4.build.ldscript=linker_scripts/gcc/flash_with_bootloader.ld
+them4.build.openocdscript=openocd_scripts/arduino_zero.cfg
+them4.build.variant=them4
+them4.build.variant_system_lib=
+them4.build.vid=0x16D0
+them4.build.pid=0x0E40
+them4.bootloader.tool=openocd
+them4.bootloader.file=doppler/bootloader-doppler-v2.0.0-33-ge603fc3.bin
+them4.compiler.arm.cmsis.ldflags="-L{build.variant.path}" -larm_cortexM4lf_math -mfloat-abi=hard -mfpu=fpv4-sp-d16
+them4.menu.cache.on=Enabled
+them4.menu.cache.on.build.cache_flags=-DENABLE_CACHE
+them4.menu.cache.off=Disabled
+them4.menu.cache.off.build.cache_flags=
