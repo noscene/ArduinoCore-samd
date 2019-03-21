@@ -24,7 +24,6 @@
 ; invalidate any other reasons why the executable file might be covered by
 ; the GNU General Public License.
 ;
-
 [Strings]
 DriverPackageDisplayName="Arduino USB Driver (for SAMD boards)"
 ManufacturerName="Arduino AG (www.arduino.cc)"
@@ -51,10 +50,11 @@ zero.sketch.name="Arduino Zero"
 zero.bootloader.name="Arduino Zero bootloader"
 sme_fox.sketch.name="SmartEverything Fox"
 sme_fox.bootloader.name="SmartEverything Fox bootloader"
-
+;jba
+doppler_m4.sketch.name="doppler"
+doppler_m4.bootloader.name="doppler"
 [DefaultInstall]
 CopyINF=arduino-samd.inf
-
 [Version]
 Class=Ports
 ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
@@ -64,14 +64,11 @@ DriverPackageDisplayName=%DriverPackageDisplayName%
 CatalogFile=arduino-samd.cat
 ; DriverVer date is MM/DD/YYYY
 DriverVer=07/11/2017,1.4.0.0
-
 [Manufacturer]
 %ManufacturerName%=DeviceList, NTamd64, NTia64
-
 [DestinationDirs]
 FakeModemCopyFileSection=12
 DefaultDestDir=12
-
 [DeviceList]
 %bossa.name%=DriverInstall, USB\VID_03EB&PID_6124
 %mkr1000.sketch.name%=DriverInstall, USB\VID_2341&PID_804E&MI_00
@@ -95,7 +92,9 @@ DefaultDestDir=12
 %zero.bootloader.name%=DriverInstall, USB\VID_2341&PID_004D
 %sme_fox.sketch.name%=DriverInstall, USB\VID_2341&PID_E002&MI_00
 %sme_fox.bootloader.name%=DriverInstall, USB\VID_2341&PID_E001
-
+;jba
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&MI_00
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&REV_4201&MI_04
 [DeviceList.NTamd64]
 %bossa.name%=DriverInstall, USB\VID_03EB&PID_6124
 %mkr1000.sketch.name%=DriverInstall, USB\VID_2341&PID_804E&MI_00
@@ -119,7 +118,9 @@ DefaultDestDir=12
 %zero.bootloader.name%=DriverInstall, USB\VID_2341&PID_004D
 %sme_fox.sketch.name%=DriverInstall, USB\VID_2341&PID_E002&MI_00
 %sme_fox.bootloader.name%=DriverInstall, USB\VID_2341&PID_E001
-
+;jba
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&MI_00
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&REV_4201&MI_04
 [DeviceList.NTia64]
 %bossa.name%=DriverInstall, USB\VID_03EB&PID_6124
 %mkr1000.sketch.name%=DriverInstall, USB\VID_2341&PID_804E&MI_00
@@ -143,21 +144,20 @@ DefaultDestDir=12
 %zero.bootloader.name%=DriverInstall, USB\VID_2341&PID_004D
 %sme_fox.sketch.name%=DriverInstall, USB\VID_2341&PID_E002&MI_00
 %sme_fox.bootloader.name%=DriverInstall, USB\VID_2341&PID_E001
-
+;jba
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&MI_00
+%doppler_m4.bootloader.name%=DriverInstall, USB\VID_16D0&PID_0E3B&REV_4201&MI_04
 [DriverInstall]
 include=mdmcpq.inf,usb.inf
 CopyFiles = FakeModemCopyFileSection
 AddReg=DriverAddReg
-
 [DriverAddReg]
 HKR,,DevLoader,,*ntkern 
 HKR,,NTMPDriver,,usbser.sys 
 HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
-
 [DriverInstall.Services]
 include=mdmcpq.inf
 AddService=usbser, 0x00000002, DriverService
-
 [DriverService]
 DisplayName=%ServiceName%
 ServiceType=1
@@ -165,4 +165,3 @@ StartType=3
 ErrorControl=1
 ServiceBinary=%12%\usbser.sys
 LoadOrderGroup=Base
-
